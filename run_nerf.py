@@ -787,7 +787,7 @@ def train():
 
         dt = time.time()-time0
         # print(f"Step: {global_step}, Loss: {loss}, Time: {dt}")
-        log_file.write(f"Step: {global_step}, Loss: {loss}, Time: {dt}")
+        log_file.write(f"Step: {global_step}, Loss: {loss}, Time: {dt}\n")
         #####           end            #####
 
         # Rest is logging
