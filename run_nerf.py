@@ -706,7 +706,8 @@ def train():
 
     # Summary writers
     # writer = SummaryWriter(os.path.join(basedir, 'summaries', expname))
-    
+    log_file = open('log_1.txt', 'w')
+
     start = start + 1
     for i in trange(start, N_iters):
         time0 = time.time()
@@ -786,6 +787,7 @@ def train():
 
         dt = time.time()-time0
         # print(f"Step: {global_step}, Loss: {loss}, Time: {dt}")
+        log_file.write(f"Step: {global_step}, Loss: {loss}, Time: {dt}")
         #####           end            #####
 
         # Rest is logging
