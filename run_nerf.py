@@ -876,6 +876,6 @@ def train():
 
 if __name__=='__main__':
     torch.set_default_tensor_type('torch.cuda.FloatTensor')
-    torch.autograd.detect_anomaly(True)
+    torch.autograd.set_detect_anomaly(True)
 
     train()
