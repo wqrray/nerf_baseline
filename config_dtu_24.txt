@@ -1,7 +1,7 @@
 expname = dtu_24_test
 basedir = ./logs
 datadir = ./data/dtu_scan24
-dataset_type = llff
+dataset_type = dtu
 
 factor = 8
 llffhold = 8

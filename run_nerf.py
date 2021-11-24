@@ -10,6 +10,7 @@ import torch.nn.functional as F
 from tqdm import tqdm, trange
 
 import matplotlib.pyplot as plt
+from load_dtu import load_dtu
 
 from run_nerf_helpers import *
 
@@ -525,7 +526,7 @@ def config_parser():
                         help='frequency of weight ckpt saving')
     parser.add_argument("--i_testset", type=int, default=50000, 
                         help='frequency of testset saving')
-    parser.add_argument("--i_video",   type=int, default=50000, 
+    parser.add_argument("--i_video",   type=int, default=200000, 
                         help='frequency of render_poses video saving')
 
     return parser
@@ -602,7 +603,15 @@ def train():
         hemi_R = np.mean(np.linalg.norm(poses[:,:3,-1], axis=-1))
         near = hemi_R-1.
         far = hemi_R+1.
-
+    elif args.dataset_type == "dtu":
+        images, poses, render_poses, i_test, hwf = load_dtu(basedir=args.datadir)
+        if not isinstance(i_test, list):
+            i_test = [i_test]
+        i_val = i_test
+        i_train = np.array([i for i in np.arange(int(images.shape[0])) if
+                        (i not in i_test and i not in i_val)])
+        near = 0.
+        far = 1.
     else:
         print('Unknown dataset type', args.dataset_type, 'exiting')
         return
