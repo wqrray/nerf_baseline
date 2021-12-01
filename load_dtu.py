@@ -86,7 +86,7 @@ def load_dtu(basedir, factor=8, recenter=True, bd_factor=.75, spherify=False, pa
     # object_bbox_min = object_bbox_min[:3, 0]
     # object_bbox_max = object_bbox_max[:3, 0]
 
-    poses = recenter_poses(pose_all)
+    poses = pose_all
     c2w = poses_avg(poses)
     print('recentered', c2w.shape)
     print(c2w[:3,:4])
@@ -96,25 +96,19 @@ def load_dtu(basedir, factor=8, recenter=True, bd_factor=.75, spherify=False, pa
     up = normalize(poses[:, :3, 1].sum(0))
 
     # Find a reasonable "focus depth" for this dataset
-    close_depth, inf_depth = 0.1, 5.
-    dt = .75
-    mean_dz = 1./(((1.-dt)/close_depth + dt/inf_depth))
-    focal = mean_dz
+    # close_depth, inf_depth = 0.1, 5.
+    # dt = .75
+    # mean_dz = 1./(((1.-dt)/close_depth + dt/inf_depth))
+    # focal = mean_dz
 
     # Get radii for spiral path
     shrink_factor = .8
-    zdelta = close_depth * .2
+    zdelta = 0.1 * .2
     tt = poses[:,:3,3] # ptstocam(poses[:3,3,:].T, c2w).T
     rads = np.percentile(np.abs(tt), 90, 0)
     c2w_path = c2w
     N_views = 120
     N_rots = 2
-    if path_zflat:
-        zloc = -close_depth * .1
-        c2w_path[:3,3] = c2w_path[:3,3] + zloc * c2w_path[:3,2]
-        rads[2] = 0.
-        N_rots = 1
-        N_views/=2
 
     # Generate poses for spiral path
     render_poses = render_path_spiral(c2w_path, up, rads, focal, zdelta, zrate=.5, rots=N_rots, N=N_views)
@@ -125,6 +119,7 @@ def load_dtu(basedir, factor=8, recenter=True, bd_factor=.75, spherify=False, pa
     dists = np.sum(np.square(c2w[:3,3] - poses[:,:3,3]), -1)
     i_test = np.argmin(dists)
     print('HOLDOUT view is', i_test)
+    print(poses.shape)
     return images, poses, render_poses, i_test, hwf
 
 # def gen_rays_at(img_idx, resolution_level=1):

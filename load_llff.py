@@ -1,6 +1,6 @@
 import numpy as np
 import os, imageio
-
+from scipy.spatial.transform import Rotation as R
 
 ########## Slightly modified version of LLFF data loading code 
 ##########  see https://github.com/Fyusion/LLFF for original
@@ -236,7 +236,7 @@ def spherify_poses(poses, bds):
     return poses_reset, new_poses, bds
     
 
-def load_llff_data(basedir, factor=8, recenter=True, bd_factor=.75, spherify=False, path_zflat=False):
+def load_llff_data(basedir, factor=8, recenter=True, bd_factor=.75, spherify=False, path_zflat=False, random_noise=True):
     poses, bds, imgs = _load_data(basedir, factor=factor) # factor=8 downsamples original imgs by 8x
     print('Loaded', basedir, bds.min(), bds.max())
     
@@ -306,5 +306,10 @@ def load_llff_data(basedir, factor=8, recenter=True, bd_factor=.75, spherify=Fal
     
     images = images.astype(np.float32)
     poses = poses.astype(np.float32)
+    if random_noise:
+        for i in range(len(poses)):
+            degrees = (np.random.random(3) * 5 - 2.5) / 180 * np.pi
+            r = R.from_euler("zyx", degrees)
+            poses[i, :3, :3] = r.as_matrix() @ poses[i, :3, :3]
 
     return images, poses, bds, render_poses, i_test
